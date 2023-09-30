@@ -1,26 +1,18 @@
-
-import boto3
+import boto3 
 import os
-from urllib.parse import urlparse
 
-def parse_s3_url(url):
-    parts = urlparse(url)
-    bucket = parts.netloc
-    key = parts.path.lstrip('/')
-    return bucket, key
+BUCKET_NAME = 'zrive-ds-data'
+prefix = 'groceries/sampled-datasets/' # helps to search particular folder in bucket
+session = boto3.Session(profile_name='default')
+s3 = session.resource('s3')
 
-def download_s3_file(url, local_path=None):
-    bucket, key = parse_s3_url(url)
-    s3 = boto3.client('s3')
-    if not local_path:
-        local_path = os.path.join(os.getcwd(), os.path.basename(key))
-    s3.download_file(bucket, key, local_path)
-    print(f"Downloaded file from {url} to {local_path}")
+def download_folder(bucket_name, s3_folder, local_dir=None):
+    bucket = s3.Bucket(bucket_name)
+    for obj in bucket.objects.filter(Prefix=s3_folder):
+        target = obj.key if local_dir is None \
+            else os.path.join(local_dir, os.path.relpath(obj.key, s3_folder))
+        if not os.path.exists(os.path.dirname(target)):
+            os.makedirs(os.path.dirname(target))
+        bucket.download_file(obj.key, target)
 
-if __name__ == "__main__":
-    URL = 's3://zrive-ds-data/groceries/sampled-datasets/'
-    PATH = '~/Zrive/zrive-ds/data/'
-    print(urlparse(url=URL))
-   #download_s3_file(, local_path=PATH)
-
-
+download_folder(BUCKET_NAME, prefix, 'data/')
