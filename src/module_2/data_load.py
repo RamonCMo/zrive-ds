@@ -2,10 +2,12 @@ import boto3
 import os
 
 BUCKET_NAME = "zrive-ds-data"
+BUCKET_NAME2 = "zrive-ds-data"
+prefix2 = "groceries/box_builder_dataset/feature_frame.csv"  # helps to search particular folder in bucket
 prefix = "groceries/sampled-datasets/"  # helps to search particular folder in bucket
+
 session = boto3.Session(profile_name="default")
 s3 = session.resource("s3")
-
 
 def download_folder(bucket_name, s3_folder, local_dir=None):
     bucket = s3.Bucket(bucket_name)
@@ -21,3 +23,4 @@ def download_folder(bucket_name, s3_folder, local_dir=None):
 
 
 download_folder(BUCKET_NAME, prefix, "data/")
+download_folder(BUCKET_NAME2, prefix2, "data/")
