@@ -137,7 +137,7 @@ def models_viewer(
     plt.show()
 
 
-def final_model(path_name: str, best_params: dict, X: pd.DataFrame) -> None:
+def final_model(path_name: str, best_params: dict, X: pd.DataFrame, y: pd.Series) -> None:
     pipe = Pipeline(
         [("classifier", LogisticRegression(random_state=42, solver="saga"))]
     )
